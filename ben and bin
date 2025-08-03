@@ -1,0 +1,159 @@
+--// Grow a Garden Force Trade (Executor GUI)
+local player = game:GetService("Players").LocalPlayer
+local guiName = "GardenForceTradeGui"
+
+-- Clean previous GUI
+local pg = player:WaitForChild("PlayerGui")
+if pg:FindFirstChild(guiName) then
+	pg[guiName]:Destroy()
+end
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui", pg)
+screenGui.Name = guiName
+screenGui.ResetOnSpawn = false
+
+-- Main Frame
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 320, 0, 260)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+mainFrame.Active = true
+mainFrame.Draggable = true
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", mainFrame).Color = Color3.fromRGB(0, 255, 130)
+
+-- Title
+local title = Instance.new("TextLabel", mainFrame)
+title.Size = UDim2.new(1, -40, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 10)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(170, 255, 170)
+title.Text = "Grow a Garden Force Trade"
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Close Button
+local closeBtn = Instance.new("TextButton", mainFrame)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -40, 0, 10)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+closeBtn.Text = "X"
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 18
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
+
+-- Loading Bar Back
+local loadingBack = Instance.new("Frame", mainFrame)
+loadingBack.Size = UDim2.new(0.85, 0, 0, 12)
+loadingBack.Position = UDim2.new(0.5, 0, 0, 190)
+loadingBack.AnchorPoint = Vector2.new(0.5, 0)
+loadingBack.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+loadingBack.Visible = false
+Instance.new("UICorner", loadingBack).CornerRadius = UDim.new(0, 6)
+
+-- Fill bar
+local loadingFill = Instance.new("Frame", loadingBack)
+loadingFill.Size = UDim2.new(0, 0, 1, 0)
+loadingFill.BackgroundColor3 = Color3.fromRGB(0, 255, 130)
+Instance.new("UICorner", loadingFill).CornerRadius = UDim.new(0, 6)
+
+-- Percent Text
+local loadingText = Instance.new("TextLabel", mainFrame)
+loadingText.Size = UDim2.new(0.85, 0, 0, 20)
+loadingText.Position = UDim2.new(0.5, 0, 0, 210)
+loadingText.AnchorPoint = Vector2.new(0.5, 0)
+loadingText.BackgroundTransparency = 1
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextSize = 14
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+loadingText.Text = "Loading... 0%"
+loadingText.Visible = false
+
+-- Create buttons
+local function createButton(name, text, posY)
+	local btn = Instance.new("TextButton", mainFrame)
+	btn.Name = name
+	btn.Size = UDim2.new(0.85, 0, 0, 34)
+	btn.Position = UDim2.new(0.5, 0, 0, posY)
+	btn.AnchorPoint = Vector2.new(0.5, 0)
+	btn.BackgroundColor3 = Color3.fromRGB(90, 0, 110)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 15
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+	return btn
+end
+
+local bypassBtn = createButton("BypassButton", "Bypass Anti-Cheat", 50)
+local freezeBtn = createButton("FreezeButton", "Freeze Trade", 100)
+local autoBtn = createButton("AutoAcceptButton", "Auto Accept Trade", 140)
+
+-- Lock other buttons until bypassed
+local bypassed = false
+local freezeEnabled = false
+local autoEnabled = false
+
+freezeBtn.AutoButtonColor = false
+autoBtn.AutoButtonColor = false
+freezeBtn.Active = false
+autoBtn.Active = false
+
+-- Bypass Logic
+bypassBtn.MouseButton1Click:Connect(function()
+	if bypassed then return end
+	bypassBtn.Text = "Bypassing Anti-Cheat..."
+	loadingBack.Visible = true
+	loadingText.Visible = true
+
+	task.spawn(function()
+		for i = 1, 100 do
+			loadingText.Text = "Loading... " .. i .. "%"
+			loadingFill.Size = UDim2.new(i / 100, 0, 1, 0)
+			task.wait(0.1)
+		end
+
+		loadingBack.Visible = false
+		loadingText.Visible = false
+		bypassBtn.Text = "✅ Anti-Cheat Bypassed"
+		bypassed = true
+
+		freezeBtn.Active = true
+		autoBtn.Active = true
+		freezeBtn.AutoButtonColor = true
+		autoBtn.AutoButtonColor = true
+	end)
+end)
+
+-- Toggle Freeze
+freezeBtn.MouseButton1Click:Connect(function()
+	if not bypassed then return end
+	freezeEnabled = not freezeEnabled
+	freezeBtn.Text = freezeEnabled and "❄️ Trade Frozen" or "Freeze Trade"
+end)
+
+-- Toggle Auto Accept
+autoBtn.MouseButton1Click:Connect(function()
+	if not bypassed then return end
+	autoEnabled = not autoEnabled
+	autoBtn.Text = autoEnabled and "✅ Auto Accept Enabled" or "Auto Accept Trade"
+end)
+
+-- Made by Ben (Footer)
+local footer = Instance.new("TextLabel", mainFrame)
+footer.Size = UDim2.new(1, -20, 0, 20)
+footer.Position = UDim2.new(0.5, 0, 1, -10)
+footer.AnchorPoint = Vector2.new(0.5, 1)
+footer.BackgroundTransparency = 1
+footer.Font = Enum.Font.Gotham
+footer.TextSize = 14
+footer.TextColor3 = Color3.fromRGB(170, 255, 170)
+footer.Text = "Made by Ben"
+footer.TextXAlignment = Enum.TextXAlignment.Center
