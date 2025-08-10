@@ -33,7 +33,7 @@ title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
 title.TextSize = 22
 title.TextColor3 = Color3.fromRGB(170, 255, 170)
-title.Text = "Grow a Garden Force Trade"
+title.Text = "Grow a Garden Freeze Trade"
 title.TextXAlignment = Enum.TextXAlignment.Left
 
 -- Close Button
